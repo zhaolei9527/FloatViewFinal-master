@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.finalteam.sakura.sample">
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
+
+    <application
+        android:name="cn.finalteam.sakura.App"
+        android:allowBackup="true"
+        android:icon="@mipmap/icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="cn.finalteam.sakura.sample.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="cn.finalteam.sakura.service.FloatViewService"
+            android:exported="false" />
+        <!-- label就是在手机设置中的无障碍里，显示的标签 -->
+        <!-- 注意这里的android:permission是在service结构里面的！！ -->
+
+        <service
+            android:name="cn.finalteam.sakura.AutoClickAccessibilityService"
+            android:exported="false"
+            android:label="FBHELP"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <!-- 配置服务服务配置文件路径 -->
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessible_service_config" />
+        </service>
+
+    </application>
+
+</manifest>

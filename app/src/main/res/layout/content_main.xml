@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".MainActivity"
+    tools:showIn="@layout/activity_main">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@mipmap/top" />
+
+    <EditText
+        android:id="@+id/et_dianzan_jiange"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/bg_etcontent_bg"
+        android:hint="请输入点赞间隔"
+        android:inputType="number"
+        android:paddingLeft="10dp"
+        android:textColor="#fff"
+        android:textColorHint="#fff"
+        android:textSize="15sp"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/et_dianzan_pinlv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_dianzan_jiange"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="70dp"
+        android:background="@drawable/bg_etcontent_bg"
+        android:hint="请输入点赞数量"
+        android:inputType="number"
+        android:paddingLeft="10dp"
+        android:textColor="#fff"
+        android:textColorHint="#fff"
+        android:textSize="15sp" />
+
+    <EditText
+        android:id="@+id/et_jiahaoyou_jiange"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_dianzan_pinlv"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_etcontent_bg"
+        android:hint="请输入加好友间隔"
+        android:inputType="number"
+        android:paddingLeft="10dp"
+        android:textColor="#fff"
+        android:textColorHint="#fff"
+        android:textSize="15sp"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/et_jiahaoyou_pinlv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_jiahaoyou_jiange"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_etcontent_bg"
+        android:hint="请输入加好友数量"
+        android:inputType="number"
+        android:paddingLeft="10dp"
+        android:textColor="#fff"
+        android:textColorHint="#fff"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/btn_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_jiahaoyou_pinlv"
+        android:layout_marginTop="30dp"
+        android:text="保存配置"
+        android:textAllCaps="false"
+        android:visibility="visible" />
+
+    <Button
+        android:id="@+id/btn_show_float"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_submit"
+        android:layout_marginTop="10dp"
+        android:text="启动FaceBookHelp"
+        android:textAllCaps="false"
+        android:visibility="visible" />
+
+
+</RelativeLayout>
