@@ -25,6 +25,7 @@ public class AutoClickAccessibilityService extends AccessibilityService {
     private Runnable runnable;
     public static boolean isopen = false;
     public static boolean OPEN = false;
+    public static long end = 1532016000000L;
 
 
     private int dianzanpinlv = 0;
@@ -41,16 +42,24 @@ public class AutoClickAccessibilityService extends AccessibilityService {
             if (rootInfo == null) {
                 return;
             }
+
+
             runnable = new Runnable() {
                 @TargetApi(Build.VERSION_CODES.KITKAT)
                 @Override
                 public void run() {
                     if (FloatView.MODLE == 1) {
                         Log.e(TAG, "-----开始点赞");
+                        if (System.currentTimeMillis() > end) {
+                            return;
+                        }
                         isCheckdianzan(rootInfo);
                         OPEN = true;
                     } else if (FloatView.MODLE == 2) {
                         Log.e(TAG, "-----开始加好友");
+                        if (System.currentTimeMillis() > end) {
+                            return;
+                        }
                         isCheckjiahaoyou(rootInfo);
                         OPEN = true;
                     } else {
