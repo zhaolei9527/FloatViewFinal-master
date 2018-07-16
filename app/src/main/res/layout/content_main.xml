@@ -83,10 +83,25 @@
         android:textSize="15sp" />
 
     <EditText
-        android:id="@+id/et_jiahaoyou_guolv"
+        android:id="@+id/et_jiahaoyou_time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/et_jiahaoyou_pinlv"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_etcontent_bg"
+        android:hint="请输入加好友间隔时间"
+        android:inputType="number"
+        android:paddingLeft="10dp"
+        android:textColor="#fff"
+        android:textColorHint="#fff"
+        android:textSize="15sp" />
+
+    <EditText
+        android:id="@+id/et_jiahaoyou_guolv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_jiahaoyou_time"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
         android:background="@drawable/bg_etcontent_bg"

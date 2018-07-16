@@ -64,6 +64,14 @@ public class AutoClickAccessibilityService extends AccessibilityService {
             if (!isopen) {
                 maxCount = 0;
                 String jiahaoyouguolv = (String) SpUtil.get(App.context, "jiahaoyouguolv", "");
+                jiahaoyoutime = (int) SpUtil.get(App.context, "jiahaoyoutime", 3);
+
+                if (jiahaoyoutime < 3) {
+                    jiahaoyoutime = 3;
+                }
+
+                jiahaoyoutime = jiahaoyoutime * 1000;
+
                 splitGuoLv = jiahaoyouguolv.split("#");
                 Log.e(TAG, "初始-----准备--未开始");
                 dianzanpinlv = (int) SpUtil.get(App.context, "dianzanpinlv", 50);
@@ -92,103 +100,121 @@ public class AutoClickAccessibilityService extends AccessibilityService {
         targetInfo.recycle();
     }
 
-    int maxCount = 0;
+    public static int maxCount = 0;
     boolean friendShow = false;
     boolean friendItemShow = false;
     boolean friendopenShow = false;
+    int jiahaoyoutime = 1000;
 
     /**
      * @param rootNodeInfo
      */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private synchronized void isCheckjiahaoyou(AccessibilityNodeInfo rootNodeInfo) {
+    private synchronized void isCheckjiahaoyou(final AccessibilityNodeInfo rootNodeInfo) {
 
-        //进入加好友页面
-        List<AccessibilityNodeInfo> FriendSuggestions = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/friend_requests_tab");
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+
+                //进入加好友页面
+                List<AccessibilityNodeInfo> friendsuggestions = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/friend_requests_tab");
 
 
-        if (!friendShow) {
-            for (int i = 0; i < FriendSuggestions.size(); i++) {
-                Log.e(TAG, "进入加好友页面");
-                performClick(FriendSuggestions.get(i));
-                friendShow = true;
-            }
-        }
-
-        //加好友悬浮窗
-        List<AccessibilityNodeInfo> activity_fab = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/activity_fab");
-
-        if (!friendItemShow) {
-            for (int i = 0; i < activity_fab.size(); i++) {
-                Log.e(TAG, "加好友悬浮窗");
-                performClick(activity_fab.get(i));
-                friendItemShow = true;
-            }
-        }
-
-        List<AccessibilityNodeInfo> Friend = rootNodeInfo.findAccessibilityNodeInfosByText("Friend Suggestions");
-
-        for (int i = 0; i < Friend.size(); i++) {
-            if (!friendopenShow) {
-                Log.e(TAG, "进入加好友列表");
-                performClick(Friend.get(i));
-                friendopenShow = true;
-            }
-        }
-
-        List<AccessibilityNodeInfo> RecyclerView = rootNodeInfo.findAccessibilityNodeInfosByViewId("android:id/list");
-
-        for (int i = 0; i < RecyclerView.size(); i++) {
-            if (friendopenShow) {
-                for (int i1 = 0; i1 < RecyclerView.get(i).getChildCount(); i1++) {
-                    if (RecyclerView.isEmpty()) {
-                        continue;
-                    }
-                    List<AccessibilityNodeInfo> names = RecyclerView.get(i).getChild(i1).findAccessibilityNodeInfosByViewId("com.facebook.katana:id/friend_list_text_content_title");
-                    if (names.isEmpty()) {
-                        continue;
-                    }
-                    for (int i2 = 0; i2 < names.size(); i2++) {
-                        if (splitGuoLv.length != 0) {
-                            boolean add = true;
-                            for (int i3 = 0; i3 < splitGuoLv.length; i3++) {
-                                String s = names.get(i2).getText().toString();
-                                Log.e(TAG, s + "**" + splitGuoLv[i3].toString());
-                                boolean contains = names.get(i2).getText().toString().contains(splitGuoLv[i3]);
-                                if (contains) {
-                                    add = false;
-                                }
-                            }
-                            if (add) {
-                                maxCount = maxCount + 1;
-                                List<AccessibilityNodeInfo> friends = RecyclerView.get(i).getChild(i1).findAccessibilityNodeInfosByViewId("com.facebook.katana:id/friend_request_positive_button");
-                                if (!friends.isEmpty()) {
-                                    performClick(friends.get(0));
-                                }
-                                Log.e(TAG, "-----加一个好友" + maxCount);
-                            }
-                        } else {
-                            maxCount = maxCount + 1;
-                            List<AccessibilityNodeInfo> friends = RecyclerView.get(i).getChild(i1).findAccessibilityNodeInfosByViewId("com.facebook.katana:id/friend_request_positive_button");
-                            for (int i4 = 0; i4 < friends.size(); i4++) {
-                                performClick(friends.get(i));
-                                Log.e(TAG, "-----加一个好友" + maxCount);
-                            }
-                        }
+                if (!friendShow) {
+                    for (int i = 0; i < friendsuggestions.size(); i++) {
+                        Log.e(TAG, "进入加好友页面");
+                        performClick(friendsuggestions.get(i));
+                        friendShow = true;
                     }
                 }
-                boolean b = RecyclerView.get(i).performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-                Log.e(TAG, "-----滑动列表");
-            }
-        }
 
-        if (maxCount < jiahaoyoupinlv) {
-            if (friendopenShow) {
-                handler.postDelayed(runnable, 5000);
-            } else {
-                handler.postDelayed(runnable, 500);
+                //加好友悬浮窗
+                List<AccessibilityNodeInfo> activity_fab = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/activity_fab");
+
+                if (!friendItemShow) {
+                    for (int i = 0; i < activity_fab.size(); i++) {
+                        Log.e(TAG, "加好友悬浮窗");
+                        performClick(activity_fab.get(i));
+                        friendItemShow = true;
+                    }
+                }
+
+                List<AccessibilityNodeInfo> Friend = rootNodeInfo.findAccessibilityNodeInfosByText("Friend Suggestions");
+
+                for (int i = 0; i < Friend.size(); i++) {
+                    if (!friendopenShow) {
+                        Log.e(TAG, "进入加好友列表");
+                        performClick(Friend.get(i));
+                        friendopenShow = true;
+                    }
+                }
+
+                List<AccessibilityNodeInfo> recyclerview = rootNodeInfo.findAccessibilityNodeInfosByViewId("android:id/list");
+
+                for (int i = 0; i < recyclerview.size(); i++) {
+                    if (friendopenShow) {
+                        for (int i1 = 0; i1 < recyclerview.get(i).getChildCount(); i1++) {
+                            if (recyclerview.isEmpty()) {
+                                continue;
+                            }
+                            List<AccessibilityNodeInfo> names = recyclerview.get(i).getChild(i1).findAccessibilityNodeInfosByViewId("com.facebook.katana:id/friend_list_text_content_title");
+                            if (names.isEmpty()) {
+                                continue;
+                            }
+                            for (int i2 = 0; i2 < names.size(); i2++) {
+                                if (splitGuoLv.length != 0) {
+                                    boolean add = true;
+                                    for (int i3 = 0; i3 < splitGuoLv.length; i3++) {
+                                        String s = names.get(i2).getText().toString();
+                                        Log.e(TAG, s + "**" + splitGuoLv[i3].toString());
+                                        boolean contains = names.get(i2).getText().toString().contains(splitGuoLv[i3]);
+                                        if (contains) {
+                                            add = false;
+                                        }
+                                    }
+                                    if (add) {
+                                        maxCount = maxCount + 1;
+                                        List<AccessibilityNodeInfo> friends = recyclerview.get(i).getChild(i1).findAccessibilityNodeInfosByViewId("com.facebook.katana:id/friend_request_positive_button");
+                                        if (!friends.isEmpty()) {
+                                            try {
+                                                Thread.sleep(jiahaoyoutime);
+                                                performClick(friends.get(0));
+                                            } catch (InterruptedException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        Log.e(TAG, "-----加一个好友" + maxCount);
+                                    }
+                                } else {
+                                    maxCount = maxCount + 1;
+                                    List<AccessibilityNodeInfo> friends = recyclerview.get(i).getChild(i1).findAccessibilityNodeInfosByViewId("com.facebook.katana:id/friend_request_positive_button");
+                                    for (int i4 = 0; i4 < friends.size(); i4++) {
+                                        try {
+                                            Thread.sleep(jiahaoyoutime);
+                                            performClick(friends.get(i));
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                        Log.e(TAG, "-----加一个好友" + maxCount);
+                                    }
+                                }
+                            }
+                        }
+                        boolean b = recyclerview.get(i).performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+                        Log.e(TAG, "-----滑动列表");
+                    }
+                }
+
+                if (maxCount < jiahaoyoupinlv) {
+                    if (friendopenShow) {
+                        handler.postDelayed(runnable, 5000);
+                    } else {
+                        handler.postDelayed(runnable, 500);
+                    }
+                }
             }
-        }
+        }.start();
 
     }
 

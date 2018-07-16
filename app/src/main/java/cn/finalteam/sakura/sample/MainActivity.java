@@ -52,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
     private int dianzanpinlv = 0;
     private int jiahaoyoupinlv = 0;
     private EditText et_jiahaoyou_guolv;
+    private EditText et_jiahaoyou_time;
+    private int jiahaoyoutime;
+    private String jiahaoyouguolv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,13 +206,17 @@ public class MainActivity extends AppCompatActivity {
 
         et_jiahaoyou_guolv = (EditText) findViewById(R.id.et_jiahaoyou_guolv);
 
+        et_jiahaoyou_time = (EditText) findViewById(R.id.et_jiahaoyou_time);
+
         btn_submit = (Button) findViewById(R.id.btn_submit);
 
         dianzanpinlv = (int) SpUtil.get(App.context, "dianzanpinlv", 50);
         jiahaoyoupinlv = (int) SpUtil.get(App.context, "jiahaoyoupinlv", 50);
+        jiahaoyoutime = (int) SpUtil.get(App.context, "jiahaoyoutime", 3);
 
-        String jiahaoyouguolv = (String) SpUtil.get(App.context, "jiahaoyouguolv", "");
+        jiahaoyouguolv = (String) SpUtil.get(App.context, "jiahaoyouguolv", "");
 
+        et_jiahaoyou_time.setText(String.valueOf(jiahaoyoutime));
         et_jiahaoyou_guolv.setText(jiahaoyouguolv);
         et_dianzan_pinlv.setText(String.valueOf(dianzanpinlv));
         et_jiahaoyou_pinlv.setText(String.valueOf(jiahaoyoupinlv));
@@ -243,6 +250,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        String jiahaoyoutime = et_jiahaoyou_time.getText().toString().trim();
+        if (TextUtils.isEmpty(jiahaoyoutime)) {
+            Toast.makeText(this, "请输入加好友间隔时间）", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        SpUtil.putAndApply(context, "jiahaoyoutime", Integer.parseInt(jiahaoyoutime));
         SpUtil.putAndApply(context, "dianzanpinlv", Integer.parseInt(dianzanpinlv));
         SpUtil.putAndApply(context, "jiahaoyoupinlv", Integer.parseInt(jiahaoyoupinlv));
         SpUtil.putAndApply(context, "jiahaoyouguolv", jiahaoyouguolv);

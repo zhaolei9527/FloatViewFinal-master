@@ -396,11 +396,6 @@ public class FloatView extends FrameLayout implements OnTouchListener {
      */
     private void openUserCenter() {
 
-        if (AutoClickAccessibilityService.OPEN) {
-            Toast.makeText(mContext, "点赞正在运行...请待任务结束", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         Toast.makeText(mContext, "开始点赞倒计时", Toast.LENGTH_SHORT).show();
         i = 6;
         handler.postDelayed(new Runnable() {
@@ -408,6 +403,9 @@ public class FloatView extends FrameLayout implements OnTouchListener {
             public void run() {
                 if (i > 0) {
                     EasyToast.showShort(mContext, String.valueOf(i));
+
+                    AutoClickAccessibilityService.maxCount = 0;
+
                     handler.postDelayed(this, 1000);
                     i--;
                 }
@@ -425,11 +423,6 @@ public class FloatView extends FrameLayout implements OnTouchListener {
      */
     private void openFeedback() {
 
-        if (AutoClickAccessibilityService.OPEN) {
-            Toast.makeText(mContext, "加好友正在运行...请待任务结束", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         Toast.makeText(mContext, "开始加好友倒计时", Toast.LENGTH_SHORT).show();
         i = 6;
         handler.postDelayed(new Runnable() {
@@ -437,6 +430,7 @@ public class FloatView extends FrameLayout implements OnTouchListener {
             public void run() {
                 if (i > 0) {
                     EasyToast.showShort(mContext, String.valueOf(i));
+                    AutoClickAccessibilityService.maxCount = 0;
                     handler.postDelayed(this, 1000);
                     i--;
                 }
