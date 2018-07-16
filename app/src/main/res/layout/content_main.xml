@@ -90,9 +90,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
         android:background="@drawable/bg_etcontent_bg"
-        android:hint="请输入加好友数量"
+        android:hint="加好友过滤（多个过滤可使用#连接）"
         android:padding="10dp"
-        android:text="a#b#c#d#f#A"
         android:textColor="#fff"
         android:textColorHint="#fff"
         android:textSize="15sp" />

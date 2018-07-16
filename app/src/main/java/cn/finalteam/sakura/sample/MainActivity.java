@@ -208,6 +208,9 @@ public class MainActivity extends AppCompatActivity {
         dianzanpinlv = (int) SpUtil.get(App.context, "dianzanpinlv", 50);
         jiahaoyoupinlv = (int) SpUtil.get(App.context, "jiahaoyoupinlv", 50);
 
+        String jiahaoyouguolv = (String) SpUtil.get(App.context, "jiahaoyouguolv", "");
+
+        et_jiahaoyou_guolv.setText(jiahaoyouguolv);
         et_dianzan_pinlv.setText(String.valueOf(dianzanpinlv));
         et_jiahaoyou_pinlv.setText(String.valueOf(jiahaoyoupinlv));
 
