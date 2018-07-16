@@ -442,6 +442,7 @@ public class FloatView extends FrameLayout implements OnTouchListener {
                 }
                 if (i == 0) {
                     //进入加好友
+                    Toast.makeText(mContext, "开始加好友", Toast.LENGTH_SHORT).show();
                     MODLE = 2;
                 }
             }

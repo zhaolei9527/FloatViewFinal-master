@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btn_submit;
     private int dianzanpinlv = 0;
     private int jiahaoyoupinlv = 0;
+    private EditText et_jiahaoyou_guolv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,6 +200,9 @@ public class MainActivity extends AppCompatActivity {
         et_dianzan_pinlv = (EditText) findViewById(R.id.et_dianzan_pinlv);
         // et_jiahaoyou_jiange = (EditText) findViewById(R.id.et_jiahaoyou_jiange);
         et_jiahaoyou_pinlv = (EditText) findViewById(R.id.et_jiahaoyou_pinlv);
+
+        et_jiahaoyou_guolv = (EditText) findViewById(R.id.et_jiahaoyou_guolv);
+
         btn_submit = (Button) findViewById(R.id.btn_submit);
 
         dianzanpinlv = (int) SpUtil.get(App.context, "dianzanpinlv", 50);
@@ -230,8 +234,15 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        String jiahaoyouguolv = et_jiahaoyou_guolv.getText().toString().trim();
+        if (TextUtils.isEmpty(jiahaoyouguolv)) {
+            Toast.makeText(this, "加好友过滤内容（多项过滤内容以#号分割）", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         SpUtil.putAndApply(context, "dianzanpinlv", Integer.parseInt(dianzanpinlv));
         SpUtil.putAndApply(context, "jiahaoyoupinlv", Integer.parseInt(jiahaoyoupinlv));
+        SpUtil.putAndApply(context, "jiahaoyouguolv", jiahaoyouguolv);
 
         Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show();
 

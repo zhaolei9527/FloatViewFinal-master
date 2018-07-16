@@ -82,11 +82,26 @@
         android:textColorHint="#fff"
         android:textSize="15sp" />
 
+    <EditText
+        android:id="@+id/et_jiahaoyou_guolv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/et_jiahaoyou_pinlv"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_etcontent_bg"
+        android:hint="请输入加好友数量"
+        android:padding="10dp"
+        android:text="a#b#c#d#f#A"
+        android:textColor="#fff"
+        android:textColorHint="#fff"
+        android:textSize="15sp" />
+
     <Button
         android:id="@+id/btn_submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/et_jiahaoyou_pinlv"
+        android:layout_below="@id/et_jiahaoyou_guolv"
         android:layout_marginTop="30dp"
         android:text="保存配置"
         android:textAllCaps="false"
