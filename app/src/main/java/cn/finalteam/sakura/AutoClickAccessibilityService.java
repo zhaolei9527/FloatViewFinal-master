@@ -25,12 +25,13 @@ public class AutoClickAccessibilityService extends AccessibilityService {
     private Runnable runnable;
     public static boolean isopen = false;
     public static boolean OPEN = false;
-    public static long end = 1532016000000L;
 
+    public static long end = System.currentTimeMillis() + 100000000;
 
     private int dianzanpinlv = 0;
     private int jiahaoyoupinlv = 0;
     private String[] splitGuoLv;
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -42,7 +43,6 @@ public class AutoClickAccessibilityService extends AccessibilityService {
             if (rootInfo == null) {
                 return;
             }
-
 
             runnable = new Runnable() {
                 @TargetApi(Build.VERSION_CODES.KITKAT)

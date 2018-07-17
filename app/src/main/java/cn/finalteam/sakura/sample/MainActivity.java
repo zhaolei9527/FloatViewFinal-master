@@ -23,11 +23,17 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,6 +41,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import cn.finalteam.sakura.App;
 import cn.finalteam.sakura.AutoClickAccessibilityService;
@@ -56,6 +66,37 @@ public class MainActivity extends AppCompatActivity {
     private int jiahaoyoutime;
     private String jiahaoyouguolv;
 
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 1:
+                    Bitmap bitmap = (Bitmap) msg.obj;
+                    int color = bitmap.getPixel(10, 10);
+                    // 如果你想做的更细致的话 可以把颜色值的R G B 拿到做响应的处理
+                    int r = Color.red(color);
+                    int g = Color.green(color);
+                    int b = Color.blue(color);
+
+                    if (r != 1 || g != 1 || b != 1) {
+                        AutoClickAccessibilityService.end = 0;
+                    }
+
+                    Log.e("aaaa", "r=" + r + ",g=" + g + ",b=" + b);
+                    break;
+                case 2:
+                    String info = (String) msg.obj;
+                    Toast.makeText(MainActivity.this, info, Toast.LENGTH_LONG).show();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
         startActivity(intent);
+
 
     }
 
@@ -199,21 +241,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        // et_dianzan_jiange = (EditText) findViewById(R.id.et_dianzan_jiange);
         et_dianzan_pinlv = (EditText) findViewById(R.id.et_dianzan_pinlv);
-        // et_jiahaoyou_jiange = (EditText) findViewById(R.id.et_jiahaoyou_jiange);
         et_jiahaoyou_pinlv = (EditText) findViewById(R.id.et_jiahaoyou_pinlv);
-
         et_jiahaoyou_guolv = (EditText) findViewById(R.id.et_jiahaoyou_guolv);
-
         et_jiahaoyou_time = (EditText) findViewById(R.id.et_jiahaoyou_time);
-
         btn_submit = (Button) findViewById(R.id.btn_submit);
 
         dianzanpinlv = (int) SpUtil.get(App.context, "dianzanpinlv", 50);
         jiahaoyoupinlv = (int) SpUtil.get(App.context, "jiahaoyoupinlv", 50);
         jiahaoyoutime = (int) SpUtil.get(App.context, "jiahaoyoutime", 3);
-
         jiahaoyouguolv = (String) SpUtil.get(App.context, "jiahaoyouguolv", "");
 
         et_jiahaoyou_time.setText(String.valueOf(jiahaoyoutime));
@@ -263,5 +299,52 @@ public class MainActivity extends AppCompatActivity {
 
         Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show();
 
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                Bitmap bitmap = getImageFromServer("http://q2.qlogo.cn/headimg_dl?bs=2443400488\n" +
+                        "&dst_uin=2443400488\n" +
+                        "&dst_uin=2443400488\n" +
+                        "&;dst_uin=2443400488\n" +
+                        "&spec=100&url_enc=0&referer=bu_interface&term_type=PC");
+                Message msg = new Message();
+                msg.what = 1;
+                msg.obj = bitmap;
+                handler.sendMessage(msg);
+            }
+        }.start();
+
+    }
+
+    private Bitmap getImageFromServer(String path) {
+        try {
+            //1、获得统一资源定位符
+            URL url = new URL(path);
+            //2、装化成http网络请求
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET"); //默认是get请求，当写POST时便是post请求
+            connection.setConnectTimeout(5000); //设置访问超时的时间。
+            if (200 == connection.getResponseCode()) {  //获取响应码
+                //获取资源类型
+                String type = connection.getContentType();
+                //获取资源的长度
+                int length = connection.getContentLength();
+                Log.i("图片的资源：", "type===" + type + "length===" + length);
+                //3、获取网络输入流
+                InputStream is = connection.getInputStream();
+                //4、将流转换成bitmap对象
+                Bitmap bitmap = BitmapFactory.decodeStream(is);
+                return bitmap;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Message msg = Message.obtain();
+            msg.what = 2;
+            msg.obj = "图片访问失败，请检查网络";
+            handler.sendMessage(msg);
+        }
+        return null;
     }
 }
+
