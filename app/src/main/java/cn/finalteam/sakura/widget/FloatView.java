@@ -403,14 +403,12 @@ public class FloatView extends FrameLayout implements OnTouchListener {
             public void run() {
                 if (i > 0) {
                     EasyToast.showShort(mContext, String.valueOf(i));
-
-                    AutoClickAccessibilityService.maxCount = 0;
-
                     handler.postDelayed(this, 1000);
                     i--;
                 }
                 if (i == 0) {
                     //进入点赞
+                    AutoClickAccessibilityService.maxCount = 0;
                     MODLE = 1;
                 }
             }
@@ -436,6 +434,7 @@ public class FloatView extends FrameLayout implements OnTouchListener {
                 }
                 if (i == 0) {
                     //进入加好友
+                    AutoClickAccessibilityService.maxCount = 0;
                     Toast.makeText(mContext, "开始加好友", Toast.LENGTH_SHORT).show();
                     MODLE = 2;
                 }

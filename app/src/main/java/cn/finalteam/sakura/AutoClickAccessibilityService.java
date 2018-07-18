@@ -58,6 +58,7 @@ public class AutoClickAccessibilityService extends AccessibilityService {
                     } else if (FloatView.MODLE == 2) {
                         Log.e(TAG, "-----开始加好友");
                         if (System.currentTimeMillis() > end) {
+                            Log.e(TAG, "-----end");
                             return;
                         }
                         isCheckjiahaoyou(rootInfo);
@@ -71,22 +72,22 @@ public class AutoClickAccessibilityService extends AccessibilityService {
             };
 
             if (!isopen) {
+
                 maxCount = 0;
                 String jiahaoyouguolv = (String) SpUtil.get(App.context, "jiahaoyouguolv", "");
                 jiahaoyoutime = (int) SpUtil.get(App.context, "jiahaoyoutime", 3);
-
                 if (jiahaoyoutime < 3) {
                     jiahaoyoutime = 3;
                 }
 
                 jiahaoyoutime = jiahaoyoutime * 1000;
-
                 splitGuoLv = jiahaoyouguolv.split("#");
                 Log.e(TAG, "初始-----准备--未开始");
                 dianzanpinlv = (int) SpUtil.get(App.context, "dianzanpinlv", 50);
                 jiahaoyoupinlv = (int) SpUtil.get(App.context, "jiahaoyoupinlv", 50);
                 handler.postDelayed(runnable, 1000);
                 isopen = !isopen;
+
             }
 
         } catch (Exception e) {
@@ -104,9 +105,13 @@ public class AutoClickAccessibilityService extends AccessibilityService {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void performClick(AccessibilityNodeInfo targetInfo) {
-        Log.e(TAG, "maxCount:" + maxCount);
-        targetInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-        targetInfo.recycle();
+        try {
+            Log.e(TAG, "maxCount:" + maxCount);
+            targetInfo.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            targetInfo.recycle();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static int maxCount = 0;
@@ -119,7 +124,7 @@ public class AutoClickAccessibilityService extends AccessibilityService {
      * @param rootNodeInfo
      */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private synchronized void isCheckjiahaoyou(final AccessibilityNodeInfo rootNodeInfo) {
+    private synchronized void isCheckjiahaoyouForID(final AccessibilityNodeInfo rootNodeInfo) {
 
         new Thread() {
             @Override
@@ -227,6 +232,76 @@ public class AutoClickAccessibilityService extends AccessibilityService {
 
     }
 
+
+    /**
+     * @param rootNodeInfo
+     */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private synchronized void isCheckjiahaoyou(final AccessibilityNodeInfo rootNodeInfo) {
+
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                try {
+
+                    List<AccessibilityNodeInfo> like = rootNodeInfo.findAccessibilityNodeInfosByText("친구 추가");
+                    List<AccessibilityNodeInfo> recyclerview = rootNodeInfo.findAccessibilityNodeInfosByViewId("android:id/list");
+
+
+                    for (int i = 0; i < recyclerview.size(); i++) {
+                        for (int i1 = 0; i1 < recyclerview.get(i).getChildCount(); i1++) {
+                            // Log.e(TAG, "*getClassName*" + recyclerview.get(i).getChild(i1).getChild(1).getClassName().toString());
+                            if ("android.widget.TextView".equals(recyclerview.get(i).getChild(i1).getChild(1).getClassName().toString())) {
+                                Log.e(TAG, "*getText*" + recyclerview.get(i).getChild(i1).getChild(1).getText().toString());
+                                if (maxCount < jiahaoyoupinlv) {
+                                    boolean add = true;
+                                    for (int i3 = 0; i3 < splitGuoLv.length; i3++) {
+                                        if (recyclerview.get(i).getChild(i1).getChild(1).getText().toString().contains(splitGuoLv[i3])) {
+                                            add = false;
+                                            Log.e(TAG, "-----addFriend---" + add);
+                                            break;
+                                        }
+                                    }
+                                    if (add) {
+                                        maxCount = maxCount + 1;
+                                        performClick(like.get(i1));
+                                        Log.e(TAG, "-----addFriend" + maxCount);
+                                        try {
+                                            sleep(jiahaoyoutime);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    } else {
+                                        Log.e(TAG, "-----addFriend" + maxCount);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    for (int i = 0; i < recyclerview.size(); i++) {
+                        boolean b = recyclerview.get(i).performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+                        Log.e(TAG, "-----滑动列表");
+                    }
+
+                    if (maxCount < jiahaoyoupinlv) {
+                        handler.postDelayed(runnable, 2000);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (maxCount < jiahaoyoupinlv) {
+                        handler.postDelayed(runnable, 2000);
+                    }
+                }
+
+            }
+        }.start();
+
+    }
+
+
     boolean likeShow = false;
 
     boolean huadonged = false;
@@ -244,6 +319,17 @@ public class AutoClickAccessibilityService extends AccessibilityService {
             Log.e(TAG, "-----滑动列表");
             if (b) {
                 huadonged = true;
+                List<AccessibilityNodeInfo> like = rootNodeInfo.findAccessibilityNodeInfosByText("좋아요");
+                if (maxCount < dianzanpinlv) {
+                    for (int i1 = 0; i1 < like.size(); i1++) {
+                        if (huadonged) {
+                            maxCount = maxCount + 1;
+                            performClick(like.get(i1));
+                        }
+                        Log.e(TAG, "-----开始点赞" + maxCount);
+                    }
+                    huadonged = false;
+                }
             }
         }
 
@@ -256,21 +342,11 @@ public class AutoClickAccessibilityService extends AccessibilityService {
             }
         }
 
-        List<AccessibilityNodeInfo> like = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/feed_feedback_like_container");
-
-        if (maxCount < dianzanpinlv) {
-            for (int i = 0; i < like.size(); i++) {
-                if (huadonged) {
-                    performClick(like.get(i));
-                }
-                Log.e(TAG, "-----开始点赞" + i);
-            }
-            huadonged = false;
-        }
-
         if (maxCount < dianzanpinlv) {
             handler.postDelayed(runnable, 2000);
         }
+
+//      List<AccessibilityNodeInfo> like = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/feed_feedback_like_container");
 
     }
 }

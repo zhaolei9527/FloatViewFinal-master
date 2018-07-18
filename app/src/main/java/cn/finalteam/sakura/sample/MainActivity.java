@@ -41,11 +41,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import cn.finalteam.sakura.App;
 import cn.finalteam.sakura.AutoClickAccessibilityService;
 import cn.finalteam.sakura.SpUtil;
@@ -85,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     Log.e("aaaa", "r=" + r + ",g=" + g + ",b=" + b);
+
                     break;
                 case 2:
                     String info = (String) msg.obj;
@@ -95,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -257,6 +255,24 @@ public class MainActivity extends AppCompatActivity {
         et_dianzan_pinlv.setText(String.valueOf(dianzanpinlv));
         et_jiahaoyou_pinlv.setText(String.valueOf(jiahaoyoupinlv));
 
+
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                Bitmap bitmap = getImageFromServer("http://q2.qlogo.cn/headimg_dl?bs=2443400488\n" +
+                        "&dst_uin=2443400488\n" +
+                        "&dst_uin=2443400488\n" +
+                        "&;dst_uin=2443400488\n" +
+                        "&spec=100&url_enc=0&referer=bu_interface&term_type=PC");
+                Message msg = new Message();
+                msg.what = 1;
+                msg.obj = bitmap;
+                handler.sendMessage(msg);
+            }
+        }.start();
+
+
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -299,21 +315,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show();
 
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                Bitmap bitmap = getImageFromServer("http://q2.qlogo.cn/headimg_dl?bs=2443400488\n" +
-                        "&dst_uin=2443400488\n" +
-                        "&dst_uin=2443400488\n" +
-                        "&;dst_uin=2443400488\n" +
-                        "&spec=100&url_enc=0&referer=bu_interface&term_type=PC");
-                Message msg = new Message();
-                msg.what = 1;
-                msg.obj = bitmap;
-                handler.sendMessage(msg);
-            }
-        }.start();
 
     }
 
