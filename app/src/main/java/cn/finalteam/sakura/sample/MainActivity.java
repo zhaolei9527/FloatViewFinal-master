@@ -185,15 +185,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 隐藏悬浮图标
-     */
-    public void hideFloatingView() {
-        if (mFloatViewService != null) {
-            mFloatViewService.hideFloat();
-        }
-    }
-
-    /**
      * 释放PJSDK数据
      */
     public void destroy() {

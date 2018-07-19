@@ -19,9 +19,9 @@ package cn.finalteam.sakura.widget;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Message;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -37,12 +37,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.DataOutputStream;
-import java.io.OutputStream;
-
 import cn.finalteam.sakura.App;
 import cn.finalteam.sakura.AutoClickAccessibilityService;
 import cn.finalteam.sakura.EasyToast;
+import cn.finalteam.sakura.sample.R;
 import cn.finalteam.sakura.utils.ResourceUtils;
 
 /**
@@ -76,32 +74,7 @@ public class FloatView extends FrameLayout implements OnTouchListener {
     private boolean mShowLoader = true;
 
     private Handler handler = new Handler();
-
-
-    final Handler mTimerHandler = new Handler() {
-        public void handleMessage(Message msg) {
-            if (msg.what == HANDLER_TYPE_HIDE_LOGO) {
-                // 比如隐藏悬浮框
-                if (mCanHide) {
-                    mCanHide = false;
-                    if (mIsRight) {
-                        mIvFloatLogo.setImageResource(ResourceUtils.getDrawableId(mContext, "pj_image_float_right"));
-                    } else {
-                        mIvFloatLogo.setImageResource(ResourceUtils.getDrawableId(mContext, "pj_image_float_left"));
-                    }
-                    mWmParams.alpha = 0.7f;
-                    mWindowManager.updateViewLayout(FloatView.this, mWmParams);
-                    refreshFloatMenu(mIsRight);
-                    mLlFloatMenu.setVisibility(View.GONE);
-                }
-            } else if (msg.what == HANDLER_TYPE_CANCEL_ANIM) {
-                mIvFloatLoader.clearAnimation();
-                mIvFloatLoader.setVisibility(View.GONE);
-                mShowLoader = false;
-            }
-            super.handleMessage(msg);
-        }
-    };
+    private TextView mTvPause;
 
     public FloatView(Context context) {
         super(context);
@@ -199,6 +172,7 @@ public class FloatView extends FrameLayout implements OnTouchListener {
                 context, "pj_float_view_icon_notify"));
         mLlFloatMenu = (LinearLayout) rootFloatView.findViewById(ResourceUtils.getId(
                 context, "ll_menu"));
+
         mTvAccount = (TextView) rootFloatView.findViewById(ResourceUtils.getId(
                 context, "tv_account"));
         mTvAccount.setOnClickListener(new OnClickListener() {
@@ -217,6 +191,19 @@ public class FloatView extends FrameLayout implements OnTouchListener {
                 mLlFloatMenu.setVisibility(View.GONE);
             }
         });
+
+
+        mTvPause = (TextView) rootFloatView.findViewById(ResourceUtils.getId(
+                context, "tv_pause"));
+        mTvPause.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                pause();
+                mLlFloatMenu.setVisibility(View.GONE);
+            }
+        });
+
+
         rootFloatView.setOnTouchListener(this);
         rootFloatView.setOnClickListener(new OnClickListener() {
             @Override
@@ -305,14 +292,27 @@ public class FloatView extends FrameLayout implements OnTouchListener {
         }
     }
 
+
+    public static boolean PAUSE = false;
+
     /**
-     * 隐藏悬浮窗
+     * 暂停功能
      */
-    public void hide() {
-        setVisibility(View.GONE);
-        Message message = mTimerHandler.obtainMessage();
-        message.what = HANDLER_TYPE_HIDE_LOGO;
-        mTimerHandler.sendMessage(message);
+    public void pause() {
+
+        if ("暂停".equals(mTvPause.getText())) {
+            mTvPause.setText("继续");
+            Drawable pause2 = getResources().getDrawable(R.drawable.pause2);
+            pause2.setBounds(0, 0, pause2.getMinimumWidth(), pause2.getMinimumHeight());
+            mTvPause.setCompoundDrawables(null, pause2, null, null);
+        } else {
+            mTvPause.setText("暂停");
+            Drawable pause1 = getResources().getDrawable(R.drawable.pause1);
+            pause1.setBounds(0, 0, pause1.getMinimumWidth(), pause1.getMinimumHeight());
+            mTvPause.setCompoundDrawables(null, pause1, null, null);
+        }
+        PAUSE = !PAUSE;
+
     }
 
     /**
@@ -326,14 +326,7 @@ public class FloatView extends FrameLayout implements OnTouchListener {
                         mContext, "pj_image_float_logo"));
                 mWmParams.alpha = 1f;
                 mWindowManager.updateViewLayout(this, mWmParams);
-                //timerForHide();
                 mShowLoader = false;
-//                mTimer.schedule(new TimerTask() {
-//                    @Override
-//                    public void run() {
-//                        mTimerHandler.sendEmptyMessage(HANDLER_TYPE_CANCEL_ANIM);
-//                    }
-//                }, 3000);
             }
         }
     }
@@ -457,39 +450,12 @@ public class FloatView extends FrameLayout implements OnTouchListener {
         return true;
     }
 
-
     /**
      * 是否Float view
      */
     public void destroy() {
-        hide();
         removeFloatView();
     }
-
-
-    /**
-     * 执行shell命令
-     *
-     * @param cmd
-     */
-    public static void execShellCmd(String cmd) {
-
-        try {
-            // 申请获取root权限，这一步很重要，不然会没有作用
-            Process process = Runtime.getRuntime().exec("su");
-            // 获取输出流
-            OutputStream outputStream = process.getOutputStream();
-            DataOutputStream dataOutputStream = new DataOutputStream(
-                    outputStream);
-            dataOutputStream.writeBytes(cmd);
-            dataOutputStream.flush();
-            dataOutputStream.close();
-            outputStream.close();
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-    }
-
 
 }
 

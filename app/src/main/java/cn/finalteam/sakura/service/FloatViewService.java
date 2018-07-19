@@ -85,12 +85,6 @@ public class FloatViewService extends AbsWorkService {
         }
     }
 
-    public void hideFloat() {
-        if (mFloatView != null) {
-            mFloatView.hide();
-        }
-    }
-
     public void destroyFloat() {
         if (mFloatView != null) {
             mFloatView.destroy();
