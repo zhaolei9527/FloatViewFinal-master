@@ -72,14 +72,12 @@ public class AutoClickAccessibilityService extends AccessibilityService {
             };
 
             if (!isopen) {
-
                 maxCount = 0;
                 String jiahaoyouguolv = (String) SpUtil.get(App.context, "jiahaoyouguolv", "");
                 jiahaoyoutime = (int) SpUtil.get(App.context, "jiahaoyoutime", 3);
                 if (jiahaoyoutime < 3) {
                     jiahaoyoutime = 3;
                 }
-
                 jiahaoyoutime = jiahaoyoutime * 1000;
                 splitGuoLv = jiahaoyouguolv.split("#");
                 Log.e(TAG, "初始-----准备--未开始");
@@ -87,7 +85,6 @@ public class AutoClickAccessibilityService extends AccessibilityService {
                 jiahaoyoupinlv = (int) SpUtil.get(App.context, "jiahaoyoupinlv", 50);
                 handler.postDelayed(runnable, 1000);
                 isopen = !isopen;
-
             }
 
         } catch (Exception e) {

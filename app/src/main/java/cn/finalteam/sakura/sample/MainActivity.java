@@ -41,9 +41,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
 import cn.finalteam.sakura.App;
 import cn.finalteam.sakura.AutoClickAccessibilityService;
 import cn.finalteam.sakura.SpUtil;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case 1:
+
                     Bitmap bitmap = (Bitmap) msg.obj;
                     int color = bitmap.getPixel(10, 10);
                     // 如果你想做的更细致的话 可以把颜色值的R G B 拿到做响应的处理
@@ -83,10 +86,11 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     Log.e("aaaa", "r=" + r + ",g=" + g + ",b=" + b);
-
                     break;
                 case 2:
+
                     String info = (String) msg.obj;
+
                     Toast.makeText(MainActivity.this, info, Toast.LENGTH_LONG).show();
                     break;
                 default:
