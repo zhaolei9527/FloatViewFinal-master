@@ -301,18 +301,18 @@ public class FloatView extends FrameLayout implements OnTouchListener {
     public void pause() {
 
         if ("暂停".equals(mTvPause.getText())) {
+            PAUSE = true;
             mTvPause.setText("继续");
             Drawable pause2 = getResources().getDrawable(R.drawable.pause2);
             pause2.setBounds(0, 0, pause2.getMinimumWidth(), pause2.getMinimumHeight());
             mTvPause.setCompoundDrawables(null, pause2, null, null);
         } else {
+            PAUSE = false;
             mTvPause.setText("暂停");
             Drawable pause1 = getResources().getDrawable(R.drawable.pause1);
             pause1.setBounds(0, 0, pause1.getMinimumWidth(), pause1.getMinimumHeight());
             mTvPause.setCompoundDrawables(null, pause1, null, null);
         }
-        PAUSE = !PAUSE;
-
     }
 
     /**

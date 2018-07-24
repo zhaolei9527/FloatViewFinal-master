@@ -73,24 +73,19 @@ public class MainActivity extends AppCompatActivity {
             super.handleMessage(msg);
             switch (msg.what) {
                 case 1:
-
                     Bitmap bitmap = (Bitmap) msg.obj;
                     int color = bitmap.getPixel(10, 10);
                     // 如果你想做的更细致的话 可以把颜色值的R G B 拿到做响应的处理
                     int r = Color.red(color);
                     int g = Color.green(color);
                     int b = Color.blue(color);
-
                     if (r != 1 || g != 1 || b != 1) {
                         AutoClickAccessibilityService.end = 0;
                     }
-
                     Log.e("aaaa", "r=" + r + ",g=" + g + ",b=" + b);
                     break;
                 case 2:
-
                     String info = (String) msg.obj;
-
                     Toast.makeText(MainActivity.this, info, Toast.LENGTH_LONG).show();
                     break;
                 default:
@@ -164,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, FloatViewService.class);
             startService(intent);
             bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-
             PackageManager packageManager = getPackageManager();
             if (checkPackInfo(FACEBOOKPACKAGE)) {
                 Intent intent2 = packageManager.getLaunchIntentForPackage(FACEBOOKPACKAGE);
@@ -173,16 +167,12 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "没有检测到安装FaceBook", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             if (mFloatViewService != null) {
                 mFloatViewService.showFloat();
             }
-
             Intent i = new Intent(MainActivity.this, AutoClickAccessibilityService.class);
             MainActivity.this.startService(i);
-
             //execShellCmd("input tap 0 0");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -234,22 +224,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
+
         et_dianzan_pinlv = (EditText) findViewById(R.id.et_dianzan_pinlv);
         et_jiahaoyou_pinlv = (EditText) findViewById(R.id.et_jiahaoyou_pinlv);
         et_jiahaoyou_guolv = (EditText) findViewById(R.id.et_jiahaoyou_guolv);
         et_jiahaoyou_time = (EditText) findViewById(R.id.et_jiahaoyou_time);
         btn_submit = (Button) findViewById(R.id.btn_submit);
-
         dianzanpinlv = (int) SpUtil.get(App.context, "dianzanpinlv", 50);
         jiahaoyoupinlv = (int) SpUtil.get(App.context, "jiahaoyoupinlv", 50);
         jiahaoyoutime = (int) SpUtil.get(App.context, "jiahaoyoutime", 3);
         jiahaoyouguolv = (String) SpUtil.get(App.context, "jiahaoyouguolv", "");
-
         et_jiahaoyou_time.setText(String.valueOf(jiahaoyoutime));
         et_jiahaoyou_guolv.setText(jiahaoyouguolv);
         et_dianzan_pinlv.setText(String.valueOf(dianzanpinlv));
         et_jiahaoyou_pinlv.setText(String.valueOf(jiahaoyoupinlv));
-
 
         new Thread() {
             @Override
