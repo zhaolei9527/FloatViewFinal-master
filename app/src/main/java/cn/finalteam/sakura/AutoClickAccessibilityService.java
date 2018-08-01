@@ -140,6 +140,8 @@ public class AutoClickAccessibilityService extends AccessibilityService {
 
                 if (1 == cmd) {
 
+
+
                     List<AccessibilityNodeInfo> list = rootNodeInfo.findAccessibilityNodeInfosByViewId("android:id/list");
                     Log.e(TAG, "进入列表");
                     for (int i = 0; i < list.size(); i++) {
