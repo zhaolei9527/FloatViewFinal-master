@@ -40,7 +40,7 @@ import android.widget.Toast;
 import cn.finalteam.sakura.App;
 import cn.finalteam.sakura.AutoClickAccessibilityService;
 import cn.finalteam.sakura.EasyToast;
-import cn.finalteam.sakura.sample.R;
+import cn.finalteam.sakura.Activity.R;
 import cn.finalteam.sakura.utils.ResourceUtils;
 
 /**

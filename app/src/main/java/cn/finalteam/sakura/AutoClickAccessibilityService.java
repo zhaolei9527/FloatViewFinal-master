@@ -8,11 +8,15 @@ import android.support.annotation.RequiresApi;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
+
 import java.util.List;
+
+import cn.finalteam.sakura.Activity.MainActivity;
 import cn.finalteam.sakura.widget.FloatView;
 
 /**
  * cn.finalteam.sakura
+ *
  * @author 赵磊
  * @date 2018/7/10
  * 功能描述：FaceBook无障碍插件
@@ -32,9 +36,9 @@ public class AutoClickAccessibilityService extends AccessibilityService {
     public void onAccessibilityEvent(AccessibilityEvent event) {
         try {
             //拿到根节点
-            final AccessibilityNodeInfo rootInfo = getRootInActiveWindow();
+            final AccessibilityNodeInfo[] rootInfo = {getRootInActiveWindow()};
 
-            if (rootInfo == null) {
+            if (rootInfo[0] == null) {
                 return;
             }
 
@@ -48,7 +52,8 @@ public class AutoClickAccessibilityService extends AccessibilityService {
                             EasyToast.showShort(getApplicationContext(), "获取权限失败");
                             return;
                         }
-                        isCheckdianzan(rootInfo);
+                        rootInfo[0] = getRootInActiveWindow();
+                        isCheckdianzan(rootInfo[0]);
                         OPEN = true;
                     } else if (FloatView.MODLE == 2) {
                         Log.e(TAG, "-----开始加好友");
@@ -56,7 +61,8 @@ public class AutoClickAccessibilityService extends AccessibilityService {
                             EasyToast.showShort(getApplicationContext(), "获取权限失败");
                             return;
                         }
-                        isCheckjiahaoyouForIDBySex(rootInfo);
+                        rootInfo[0] = getRootInActiveWindow();
+                        isCheckjiahaoyouForIDBySex(rootInfo[0]);
                         OPEN = true;
                     } else {
                         Log.e(TAG, "-----准备");
@@ -111,51 +117,146 @@ public class AutoClickAccessibilityService extends AccessibilityService {
     boolean friendopenShow = false;
     int jiahaoyoutime = 1000;
 
+    public static int cmd = 1;
+    public static int now = 0;
+
     /**
      * @param rootNodeInfo
      */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private synchronized void isCheckjiahaoyouForIDBySex(final AccessibilityNodeInfo rootNodeInfo) {
-
         new Thread() {
             @Override
             public void run() {
                 super.run();
-
                 if (maxCount < jiahaoyoupinlv) {
                     handler.postDelayed(runnable, 1000);
                 }
 
-                String s = rootNodeInfo.getText().toString();
-                Log.e(TAG, s.toString());
-
-                List<AccessibilityNodeInfo> collection_title_section = rootNodeInfo.findAccessibilityNodeInfosByText("生日等");
-
-                for (int i = 0; i < collection_title_section.size(); i++) {
-                    performClick(collection_title_section.get(i));
+                if (rootNodeInfo == null) {
+                    Log.e(TAG, "空结构");
+                    return;
                 }
 
-                List<AccessibilityNodeInfo> about_item = rootNodeInfo.findAccessibilityNodeInfosByText("简介");
+                if (1 == cmd) {
 
-                for (int i = 0; i < about_item.size(); i++) {
-                    performClick(about_item.get(i));
-                }
-
-                List<AccessibilityNodeInfo> recyclerview = rootNodeInfo.
-                        findAccessibilityNodeInfosByViewId("android:id/list");
-
-                for (int i = 0; i < recyclerview.size(); i++) {
-                    try {
-                        for (int i1 = 0; i1 < recyclerview.get(i).getChildCount(); i1++) {
-                            performClick(recyclerview.get(i).getChild(i1));
-                            return;
+                    List<AccessibilityNodeInfo> list = rootNodeInfo.findAccessibilityNodeInfosByViewId("android:id/list");
+                    Log.e(TAG, "进入列表");
+                    for (int i = 0; i < list.size(); i++) {
+                        for (int i1 = 0; i1 < list.get(i).getChildCount(); i1++) {
+                            if (i1 + now < list.get(i).getChildCount()) {
+                                Log.e(TAG, "进入详情");
+                                performClick(list.get(i).getChild(i1 + now));
+                            } else {
+                                list.get(i).performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+                                now = 0;
+                            }
+                            try {
+                                sleep(800);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            cmd = 2;
                         }
-                    } catch (Exception e) {
+                    }
+                }
+
+                if (2 == cmd) {
+                    try {
+                        sleep(1000);
+                        Log.e(TAG, "进入简介");
+                        List<AccessibilityNodeInfo> jianjie = rootNodeInfo.findAccessibilityNodeInfosByText("简介");
+                        for (int i = 0; i < jianjie.size(); i++) {
+                            performClick(jianjie.get(i));
+                            cmd = 3;
+                        }
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    //boolean b = recyclerview.get(i).performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-                    Log.e(TAG, "-----滑动列表");
                 }
+
+                if (3 == cmd) {
+                    try {
+                        sleep(800);
+                        Log.e(TAG, "进入web页");
+                        List<AccessibilityNodeInfo> xingbie = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/collection_title_section");
+                        for (int i = 0; i < xingbie.size(); i++) {
+                            performClick(xingbie.get(i));
+                            cmd = 4;
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (!MainActivity.open) {
+                    if (4 == cmd) {
+                        Log.e(TAG, "准备截图");
+                        try {
+                            sleep(3000);
+                            MainActivity.open = true;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                List<AccessibilityNodeInfo> back = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/fb_logo_up_button");
+
+                if (5 == cmd || 6 == cmd || 7 == cmd || 9 == cmd) {
+                    MainActivity.open = false;
+                    if (MainActivity.isman) {
+                        for (int i = 0; i < back.size(); i++) {
+                            if (6 == cmd) {
+                                Log.e(TAG, "是男性，准备返回");
+                                cmd = 8;
+                            }
+                            if (5 == cmd) {
+                                Log.e(TAG, "是男性，准备返回");
+                                cmd = 6;
+                            }
+                            performClick(back.get(i));
+                        }
+                    } else {
+                        for (int i = 0; i < back.size(); i++) {
+                            if (7 == cmd) {
+                                Log.e(TAG, "不是男性，准备返回");
+                                cmd = 9;
+                            }
+                            if (5 == cmd) {
+                                Log.e(TAG, "不是男性，准备返回");
+                                cmd = 7;
+                            }
+                            performClick(back.get(i));
+                            now = now + 1;
+                        }
+                    }
+                }
+
+                if (8 == cmd) {
+                    List<AccessibilityNodeInfo> add = rootNodeInfo.findAccessibilityNodeInfosByText("加为好友");
+                    for (int i = 0; i < add.size(); i++) {
+                        if (8 == cmd) {
+                            Log.e(TAG, "是男性，加上好友");
+                            performClick(add.get(i));
+                            cmd = 10;
+                            now = now + 1;
+                            maxCount = maxCount + 1;
+                        }
+                    }
+                    if (10 == cmd) {
+                        for (int i = 0; i < back.size(); i++) {
+                            Log.e(TAG, "是男性，加完好友，进行返回");
+                            performClick(back.get(i));
+                            cmd = 1;
+                        }
+                    }
+                }
+
+                if (9 == cmd) {
+                    cmd = 1;
+                }
+                Log.e(TAG, "cmd:" + cmd);
 
             }
         }.start();
@@ -343,9 +444,7 @@ public class AutoClickAccessibilityService extends AccessibilityService {
 
     }
 
-
     boolean likeShow = false;
-
     boolean huadonged = false;
 
     /**
@@ -353,13 +452,9 @@ public class AutoClickAccessibilityService extends AccessibilityService {
      */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private synchronized void isCheckdianzan(AccessibilityNodeInfo rootNodeInfo) {
-
         if (!FloatView.PAUSE) {
-
             Log.e(TAG, "----" + FloatView.PAUSE);
-
             List<AccessibilityNodeInfo> RecyclerView = rootNodeInfo.findAccessibilityNodeInfosByViewId("android:id/list");
-
             for (int i = 0; i < RecyclerView.size(); i++) {
                 boolean b = RecyclerView.get(i).performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
                 EasyToast.showShort(getApplicationContext(), "下一页");
@@ -379,22 +474,19 @@ public class AutoClickAccessibilityService extends AccessibilityService {
                     }
                 }
             }
-
             List<AccessibilityNodeInfo> likeopen = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/news_feed_tab");
-
             if (!likeShow) {
                 for (int i = 0; i < likeopen.size(); i++) {
                     performClick(likeopen.get(i));
                     likeShow = true;
                 }
             }
-
         }
-
         if (maxCount < dianzanpinlv) {
             handler.postDelayed(runnable, 2000);
         }
-
 //      List<AccessibilityNodeInfo> like = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/feed_feedback_like_container");
     }
+
+
 }

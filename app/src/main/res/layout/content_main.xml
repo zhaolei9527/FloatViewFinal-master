@@ -42,7 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/et_dianzan_jiange"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="50dp"
         android:background="@drawable/bg_etcontent_bg"
         android:hint="请输入点赞数量"
         android:inputType="number"
@@ -116,8 +116,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/et_jiahaoyou_guolv"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:text="保存配置"
+        android:textAllCaps="false"
+        android:visibility="visible" />
+
+    <Button
+        android:id="@+id/btn_dairu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_submit"
+        android:layout_marginTop="3dp"
+        android:text="导入识别语言包"
         android:textAllCaps="false"
         android:visibility="visible" />
 
@@ -125,8 +135,8 @@
         android:id="@+id/btn_show_float"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/btn_submit"
-        android:layout_marginTop="10dp"
+        android:layout_below="@id/btn_dairu"
+        android:layout_marginTop="3dp"
         android:text="启动FaceBookHelp"
         android:textAllCaps="false"
         android:visibility="visible" />
