@@ -440,6 +440,8 @@ public class AutoClickAccessibilityService extends AccessibilityService {
                         handler.postDelayed(runnable, 1000);
                     }
 
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (maxCount < jiahaoyoupinlv) {
