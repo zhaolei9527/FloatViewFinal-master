@@ -30,46 +30,58 @@ public class AutoClickAccessibilityService extends AccessibilityService {
     private int dianzanpinlv = 0;
     private int jiahaoyoupinlv = 0;
     private String[] splitGuoLv;
+    private AccessibilityNodeInfo[] rootInfo;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         try {
             //拿到根节点
-            final AccessibilityNodeInfo[] rootInfo = {getRootInActiveWindow()};
+            rootInfo = new AccessibilityNodeInfo[]{getRootInActiveWindow()};
 
             if (rootInfo[0] == null) {
                 return;
             }
 
-            runnable = new Runnable() {
-                @TargetApi(Build.VERSION_CODES.KITKAT)
-                @Override
-                public void run() {
-                    if (FloatView.MODLE == 1) {
-                        Log.e(TAG, "-----开始点赞");
-                        if (System.currentTimeMillis() > end) {
-                            EasyToast.showShort(getApplicationContext(), "获取权限失败");
-                            return;
+            if (runnable == null) {
+                runnable = new Runnable() {
+                    @TargetApi(Build.VERSION_CODES.KITKAT)
+                    @Override
+                    public void run() {
+                        if (FloatView.MODLE == 1) {
+                            Log.e(TAG, "-----点赞LOADING");
+                            if (System.currentTimeMillis() > end) {
+                                EasyToast.showShort(getApplicationContext(), "获取权限失败");
+                                return;
+                            }
+                            rootInfo[0] = getRootInActiveWindow();
+                            isCheckdianzan(rootInfo[0]);
+                            OPEN = true;
+                        } else if (FloatView.MODLE == 2) {
+                            Log.e(TAG, "-----加好友LOADING");
+                            if (System.currentTimeMillis() > end) {
+                                EasyToast.showShort(getApplicationContext(), "获取权限失败");
+                                return;
+                            }
+                            rootInfo[0] = getRootInActiveWindow();
+                            isCheckjiahaoyou(rootInfo[0]);
+                            OPEN = true;
+                        } else if (FloatView.MODLE == 3) {
+                            Log.e(TAG, "-----加好友的好友LOADING");
+                            if (System.currentTimeMillis() > end) {
+                                EasyToast.showShort(getApplicationContext(), "获取权限失败");
+                                return;
+                            }
+                            rootInfo[0] = getRootInActiveWindow();
+                            isCheckjiahaoyoudehaoyou(rootInfo[0]);
+                            OPEN = true;
+                        } else {
+                            Log.e(TAG, "-----准备");
+                            handler.postDelayed(runnable, 1000);
                         }
-                        rootInfo[0] = getRootInActiveWindow();
-                        isCheckdianzan(rootInfo[0]);
-                        OPEN = true;
-                    } else if (FloatView.MODLE == 2) {
-                        Log.e(TAG, "-----开始加好友");
-                        if (System.currentTimeMillis() > end) {
-                            EasyToast.showShort(getApplicationContext(), "获取权限失败");
-                            return;
-                        }
-                        rootInfo[0] = getRootInActiveWindow();
-                        isCheckjiahaoyouForIDBySex(rootInfo[0]);
-                        OPEN = true;
-                    } else {
-                        Log.e(TAG, "-----准备");
-                        handler.postDelayed(runnable, 1000);
                     }
-                }
-            };
+                };
+            }
 
             if (!isopen) {
                 maxCount = 0;
@@ -125,140 +137,165 @@ public class AutoClickAccessibilityService extends AccessibilityService {
      */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private synchronized void isCheckjiahaoyouForIDBySex(final AccessibilityNodeInfo rootNodeInfo) {
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                if (maxCount < jiahaoyoupinlv) {
-                    handler.postDelayed(runnable, 1000);
-                }
 
-                if (rootNodeInfo == null) {
-                    Log.e(TAG, "空结构");
-                    return;
-                }
+        try {
 
-                if (1 == cmd) {
-                    List<AccessibilityNodeInfo> list = rootNodeInfo.findAccessibilityNodeInfosByViewId("android:id/list");
-                    Log.e(TAG, "进入列表");
-                    for (int i = 0; i < list.size(); i++) {
-                        for (int i1 = 0; i1 < list.get(i).getChildCount(); i1++) {
-                            if (i1 + now < list.get(i).getChildCount()) {
-                                Log.e(TAG, "进入详情");
-                                performClick(list.get(i).getChild(i1 + now));
-                            } else {
-                                list.get(i).performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
-                                now = 0;
+            if (rootNodeInfo == null) {
+                Log.e(TAG, "空结构");
+                return;
+            }
+
+            if (1 == cmd) {
+                final List<AccessibilityNodeInfo> list = rootNodeInfo.findAccessibilityNodeInfosByViewId("android:id/list");
+                Log.e(TAG, "进入列表");
+                for (int i = 0; i < list.size(); i++) {
+                    if (now > list.get(i).getChildCount() - 1) {
+                        list.get(i).performAction(AccessibilityNodeInfo.ACTION_SCROLL_FORWARD);
+                        now = 0;
+                    }
+                    if (list.get(i).getChildCount() > 0) {
+                        final int finalI = i;
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                performClick(list.get(finalI).getChild(now));
+                                Log.e(TAG, "进入好友主页" + (now));
+                                cmd = 2;
                             }
-                            try {
-                                sleep(800);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            cmd = 2;
-                        }
+                        }, 500);
                     }
                 }
+            }
 
-                if (2 == cmd) {
-                    try {
-                        sleep(1000);
-                        Log.e(TAG, "进入简介");
+            if (2 == cmd) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
                         List<AccessibilityNodeInfo> jianjie = rootNodeInfo.findAccessibilityNodeInfosByText("简介");
                         for (int i = 0; i < jianjie.size(); i++) {
                             performClick(jianjie.get(i));
                             cmd = 3;
                         }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
-                }
+                }, 2000);
+                Log.e(TAG, "进入简介");
+            }
 
-                if (3 == cmd) {
-                    try {
-                        sleep(800);
+            if (3 == cmd) {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
                         Log.e(TAG, "进入web页");
                         List<AccessibilityNodeInfo> xingbie = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/collection_title_section");
                         for (int i = 0; i < xingbie.size(); i++) {
                             performClick(xingbie.get(i));
-                            cmd = 4;
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (!MainActivity.open) {
-                    if (4 == cmd) {
-                        Log.e(TAG, "准备截图");
-                        try {
-                            sleep(3000);
-                            MainActivity.open = true;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    cmd = 4;
+                                    if (!MainActivity.open) {
+                                        if (4 == cmd) {
+                                            Log.e(TAG, "准备截图");
+                                            MainActivity.open = true;
+                                        }
+                                    }
+                                }
+                            }, 3000);
                         }
                     }
-                }
+                }, 2000);
+            }
 
-                List<AccessibilityNodeInfo> back = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/fb_logo_up_button");
+            final List<AccessibilityNodeInfo> back = rootNodeInfo.findAccessibilityNodeInfosByViewId("com.facebook.katana:id/fb_logo_up_button");
 
-                if (5 == cmd || 6 == cmd || 7 == cmd || 9 == cmd) {
-                    MainActivity.open = false;
-                    if (MainActivity.isman) {
-                        for (int i = 0; i < back.size(); i++) {
-                            if (6 == cmd) {
-                                Log.e(TAG, "是男性，准备返回");
-                                cmd = 8;
-                            }
-                            if (5 == cmd) {
-                                Log.e(TAG, "是男性，准备返回");
-                                cmd = 6;
-                            }
-                            performClick(back.get(i));
+            if (5 == cmd || 6 == cmd || 7 == cmd || 9 == cmd) {
+                MainActivity.open = false;
+                if (MainActivity.isman) {
+                    for (int i = 0; i < back.size(); i++) {
+                        final int finalI = i;
+
+                        if (6 == cmd) {
+                            Log.e(TAG, "是男性，准备返回");
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    performClick(back.get(finalI));
+                                    cmd = 8;
+                                }
+                            }, 1500);
                         }
-                    } else {
-                        for (int i = 0; i < back.size(); i++) {
-                            if (7 == cmd) {
-                                Log.e(TAG, "不是男性，准备返回");
-                                cmd = 9;
-                            }
-                            if (5 == cmd) {
-                                Log.e(TAG, "不是男性，准备返回");
-                                cmd = 7;
-                            }
-                            performClick(back.get(i));
-                            now = now + 1;
+
+                        if (5 == cmd) {
+                            Log.e(TAG, "是男性，准备返回");
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    performClick(back.get(finalI));
+                                    cmd = 6;
+                                }
+                            }, 3000);
                         }
+
                     }
-                }
-
-                if (8 == cmd) {
-                    List<AccessibilityNodeInfo> add = rootNodeInfo.findAccessibilityNodeInfosByText("加为好友");
-                    for (int i = 0; i < add.size(); i++) {
-                        if (8 == cmd) {
-                            Log.e(TAG, "是男性，加上好友");
-                            performClick(add.get(i));
-                            cmd = 10;
-                            now = now + 1;
+                } else {
+                    for (int i = 0; i < back.size(); i++) {
+                        performClick(back.get(i));
+                        if (9 == cmd) {
+                            Log.e(TAG, "不是男性，准备返回");
                             maxCount = maxCount + 1;
-                        }
-                    }
-                    if (10 == cmd) {
-                        for (int i = 0; i < back.size(); i++) {
-                            Log.e(TAG, "是男性，加完好友，进行返回");
-                            performClick(back.get(i));
                             cmd = 1;
                         }
+                        if (7 == cmd) {
+                            Log.e(TAG, "不是男性，准备返回");
+                            cmd = 9;
+                        }
+                        if (5 == cmd) {
+                            Log.e(TAG, "不是男性，准备返回");
+                            cmd = 7;
+                        }
+                        now = now + 1;
                     }
                 }
-
-                if (9 == cmd) {
-                    cmd = 1;
-                }
-                Log.e(TAG, "cmd:" + cmd);
-
             }
-        }.start();
+
+            if (8 == cmd) {
+                final List<AccessibilityNodeInfo> add = rootNodeInfo.findAccessibilityNodeInfosByText("加为好友");
+                for (int i = 0; i < add.size(); i++) {
+                    final int finalI = i;
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e(TAG, "是男性，加上好友");
+                            performClick(add.get(finalI));
+                            now = now + 1;
+                            cmd = 10;
+                        }
+                    }, 2000);
+                }
+            }
+
+            if (10 == cmd) {
+                for (int i = 0; i < back.size(); i++) {
+                    final int finalI = i;
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e(TAG, "是男性，加完好友，进行返回");
+                            maxCount = maxCount + 1;
+                            performClick(back.get(finalI));
+                            cmd = 1;
+                        }
+                    }, 2000);
+                }
+            }
+            Log.e(TAG, "cmd:" + cmd);
+
+            handler.postDelayed(runnable, 1000);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -371,6 +408,50 @@ public class AutoClickAccessibilityService extends AccessibilityService {
         }.start();
 
     }
+
+
+    /**
+     * @param rootNodeInfo
+     */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    private synchronized void isCheckjiahaoyoudehaoyou(final AccessibilityNodeInfo rootNodeInfo) {
+
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    List<AccessibilityNodeInfo> friends = rootNodeInfo.findAccessibilityNodeInfosByText("옵션 더보기");
+
+                    List<AccessibilityNodeInfo> openFriends = rootNodeInfo.findAccessibilityNodeInfosByText("친구 보기");
+
+                    for (int i = 0; i < friends.size(); i++) {
+                        sleep(1000);
+                        performClick(friends.get(i));
+                    }
+
+                    for (int i = 0; i < openFriends.size(); i++) {
+                        Log.e(TAG, "进入好友的好友列表");
+                        sleep(1000);
+                        performClick(openFriends.get(i));
+                    }
+
+                    if (maxCount < jiahaoyoupinlv) {
+                        handler.postDelayed(runnable, 1000);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (maxCount < jiahaoyoupinlv) {
+                        handler.postDelayed(runnable, 2000);
+                    }
+                }
+
+            }
+        }.start();
+
+    }
+
 
     /**
      * @param rootNodeInfo

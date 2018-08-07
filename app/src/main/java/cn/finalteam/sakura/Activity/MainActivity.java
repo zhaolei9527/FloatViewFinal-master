@@ -532,6 +532,7 @@ public class MainActivity extends AppCompatActivity {
                 if (open) {
                     Log.e("GK", "截图中");
                     startScreenShot();
+                    open = false;
                 }
                 handler.postDelayed(this, 1000);
             }
@@ -554,6 +555,7 @@ public class MainActivity extends AppCompatActivity {
         if (f.exists()) {
             f.delete();
         }
+
         if (!f.exists()) {
             File p = new File(f.getParent());
             if (!p.exists()) {

@@ -75,6 +75,7 @@ public class FloatView extends FrameLayout implements OnTouchListener {
 
     private Handler handler = new Handler();
     private TextView mTvPause;
+    private TextView mTvFriends;
 
     public FloatView(Context context) {
         super(context);
@@ -188,6 +189,17 @@ public class FloatView extends FrameLayout implements OnTouchListener {
             @Override
             public void onClick(View arg0) {
                 openFeedback();
+                mLlFloatMenu.setVisibility(View.GONE);
+            }
+        });
+
+
+        mTvFriends = (TextView) rootFloatView.findViewById(ResourceUtils.getId(
+                context, "tv_friends"));
+        mTvFriends.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                openfriendsFriend();
                 mLlFloatMenu.setVisibility(View.GONE);
             }
         });
@@ -406,6 +418,33 @@ public class FloatView extends FrameLayout implements OnTouchListener {
                 }
             }
         }, 1000);
+    }
+
+    /**
+     * 开始加好友的好友
+     */
+    private void openfriendsFriend() {
+
+        Toast.makeText(mContext, "开始加好友的好友倒计时", Toast.LENGTH_SHORT).show();
+        i = 6;
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (i > 0) {
+                    EasyToast.showShort(mContext, String.valueOf(i));
+                    AutoClickAccessibilityService.maxCount = 0;
+                    handler.postDelayed(this, 1000);
+                    i--;
+                }
+                if (i == 0) {
+                    //进入加好友
+                    AutoClickAccessibilityService.maxCount = 0;
+                    Toast.makeText(mContext, "开始加好友的好友", Toast.LENGTH_SHORT).show();
+                    MODLE = 3;
+                }
+            }
+        }, 1000);
+
     }
 
 

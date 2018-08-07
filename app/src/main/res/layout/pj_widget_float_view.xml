@@ -33,6 +33,17 @@
             android:textSize="12sp" />
 
         <TextView
+            android:id="@+id/tv_friends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:drawableTop="@drawable/freendsfriend"
+            android:padding="4dp"
+            android:text="好友好友"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+
+        <TextView
             android:id="@+id/tv_pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,6 +53,7 @@
             android:text="暂停"
             android:textColor="#FFFFFF"
             android:textSize="12sp" />
+
 
     </LinearLayout>
 
