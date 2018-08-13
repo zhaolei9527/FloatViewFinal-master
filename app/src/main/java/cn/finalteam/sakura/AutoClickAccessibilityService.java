@@ -14,6 +14,8 @@ import java.util.List;
 import cn.finalteam.sakura.Activity.MainActivity;
 import cn.finalteam.sakura.widget.FloatView;
 
+import static cn.finalteam.sakura.Activity.MainActivity.execShellCmd;
+
 /**
  * cn.finalteam.sakura
  *
@@ -421,6 +423,7 @@ public class AutoClickAccessibilityService extends AccessibilityService {
             public void run() {
                 super.run();
                 try {
+
                     List<AccessibilityNodeInfo> friends = rootNodeInfo.findAccessibilityNodeInfosByText("옵션 더보기");
 
                     List<AccessibilityNodeInfo> openFriends = rootNodeInfo.findAccessibilityNodeInfosByText("친구 보기");
@@ -432,8 +435,9 @@ public class AutoClickAccessibilityService extends AccessibilityService {
 
                     for (int i = 0; i < openFriends.size(); i++) {
                         Log.e(TAG, "进入好友的好友列表");
-                        sleep(1000);
                         performClick(openFriends.get(i));
+                        execShellCmd("input tap 215 595");
+                        Log.e(TAG, "点击后");
                     }
 
                     if (maxCount < jiahaoyoupinlv) {
