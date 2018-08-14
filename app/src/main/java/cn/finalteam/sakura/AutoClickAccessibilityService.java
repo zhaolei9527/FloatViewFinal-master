@@ -411,6 +411,9 @@ public class AutoClickAccessibilityService extends AccessibilityService {
 
     }
 
+    private boolean openFriendFriend = false;
+    private boolean BackFriendFriend = false;
+    private int add = 0;
 
     /**
      * @param rootNodeInfo
@@ -426,18 +429,43 @@ public class AutoClickAccessibilityService extends AccessibilityService {
 
                     List<AccessibilityNodeInfo> friends = rootNodeInfo.findAccessibilityNodeInfosByText("옵션 더보기");
 
-                    List<AccessibilityNodeInfo> openFriends = rootNodeInfo.findAccessibilityNodeInfosByText("친구 보기");
+                    List<AccessibilityNodeInfo> back = rootNodeInfo.findAccessibilityNodeInfosByText("돌아가기");
+
+                    List<AccessibilityNodeInfo> openFriends = rootNodeInfo.findAccessibilityNodeInfosByText("친구 추가");
 
                     for (int i = 0; i < friends.size(); i++) {
                         sleep(1000);
-                        performClick(friends.get(i));
+                        if (!openFriendFriend) {
+                            if (add < friends.size()) {
+                                performClick(friends.get(add));
+                                sleep(1000);
+                                execShellCmd("input tap 215 595");
+                                Log.e(TAG, "点击后");
+                                openFriendFriend = !openFriendFriend;
+                                BackFriendFriend = !BackFriendFriend;
+                            }
+                        }
+                    }
+
+                    if (openFriends.isEmpty()) {
+                        Log.e(TAG, "未查询到好友节点");
+                        for (int i = 0; i < back.size(); i++) {
+                            if (BackFriendFriend) {
+                                Log.e(TAG, "返回");
+                                performClick(back.get(i));
+                                openFriendFriend = !openFriendFriend;
+                                BackFriendFriend = !BackFriendFriend;
+                                add = add + 1;
+                            }
+                        }
                     }
 
                     for (int i = 0; i < openFriends.size(); i++) {
-                        Log.e(TAG, "进入好友的好友列表");
-                        performClick(openFriends.get(i));
-                        execShellCmd("input tap 215 595");
-                        Log.e(TAG, "点击后");
+                        if (openFriendFriend) {
+                            Log.e(TAG, "加上好友");
+                            performClick(openFriends.get(i));
+                            sleep(600);
+                        }
                     }
 
                     if (maxCount < jiahaoyoupinlv) {
